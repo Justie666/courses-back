@@ -9,6 +9,7 @@ import { UserService } from 'src/user/user.service'
 import { SignInDto, SignUpDto } from './dto/auth.dto'
 import { verify } from 'argon2'
 import { Response } from 'express'
+import { userWithoutPassword } from 'src/helpers'
 
 @Injectable()
 export class AuthService {
@@ -18,8 +19,7 @@ export class AuthService {
   constructor(private jwt: JwtService, private userService: UserService) {}
 
   async signIn(dto: SignInDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = await this.validateUser(dto)
+    const user = userWithoutPassword(await this.validateUser(dto))
 
     const tokens = this.issueTokens(user.id)
 
@@ -31,9 +31,7 @@ export class AuthService {
 
     if (oldUser)
       throw new BadRequestException('Пользователь с таким email уже существует')
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = await this.userService.create(dto)
-
+    const user = userWithoutPassword(await this.userService.create(dto))
     const tokens = this.issueTokens(user.id)
 
     return { user, ...tokens }
@@ -43,8 +41,7 @@ export class AuthService {
     const result = await this.jwt.verifyAsync(refreshToken)
     if (!result) throw new UnauthorizedException('Неверный refresh токен')
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = await this.userService.getById(result.id)
+    const user = userWithoutPassword(await this.userService.getById(result.id))
 
     const tokens = this.issueTokens(user.id)
 
@@ -54,7 +51,7 @@ export class AuthService {
   private issueTokens(userId: string) {
     const data = { id: userId }
 
-    const accessToken = this.jwt.sign(data, { expiresIn: '1h' })
+    const accessToken = this.jwt.sign(data, { expiresIn: '3600s' })
     const refreshToken = this.jwt.sign(data, { expiresIn: '7d' })
 
     return { accessToken, refreshToken }

@@ -47,7 +47,7 @@ export class AuthController {
 
   @UsePipes(new ValidationPipe())
   @HttpCode(200)
-  @Post('sign-in/access-token')
+  @Post('access-token')
   async getNewTokens(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
