@@ -11,6 +11,9 @@ export class UserService {
   async getCurrentUser(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        userFavoriteCourse: true,
+      },
     })
 
     return userWithoutPassword(user)
