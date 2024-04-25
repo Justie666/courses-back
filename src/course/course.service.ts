@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { CourseDto } from './dto/course.dto'
-import { extname, join } from 'path'
-import { fileUpload } from 'src/helpers/fileUpload'
-import slugify from 'slugify'
+// import { extname, join } from 'path'
+// import { fileUpload } from 'src/helpers/fileUpload'
+import { getSlug } from 'src/helpers/getSlug'
 
 @Injectable()
 export class CourseService {
@@ -41,25 +41,19 @@ export class CourseService {
     if (oldCourse)
       throw new BadRequestException('Курс с таким названием уже существует')
 
-    const courseSlug = slugify(dto.title, {
-      replacement: '_',
-      remove: /[*+~.()'"!:@]/g,
-      lower: true,
-    })
+    const courseSlug = getSlug(dto.title)
 
-    const pathName = `./uploads/courses`
-    const fileName = `${courseSlug}${extname(image.originalname)}`
-    const fullPath = join(pathName, fileName)
+    // const pathName = `./uploads/courses`
+    // const fileName = `${courseSlug}${extname(image.originalname)}`
+    // const fullPath = join(pathName, fileName)
 
-    fileUpload(image, pathName, fileName)
-
-    // return fullPath
+    // fileUpload(image, pathName, fileName)
 
     return this.prisma.course.create({
       data: {
         title: dto.title,
         slug: courseSlug,
-        image: fullPath,
+        // image: fullPath,
         courseCategory: {
           createMany: { data: dto.categoryIds.map(id => ({ categoryId: id })) },
         },
@@ -79,6 +73,8 @@ export class CourseService {
       throw new BadRequestException('Курс с таким названием уже существует')
     }
 
+    const courseSlug = getSlug(dto.title)
+
     await this.prisma.courseCategory.deleteMany({
       where: {
         courseId: id,
@@ -89,6 +85,7 @@ export class CourseService {
       where: { id },
       data: {
         title: dto.title,
+        slug: courseSlug,
         courseCategory: {
           createMany: {
             data: dto.categoryIds.map(categoryId => ({
