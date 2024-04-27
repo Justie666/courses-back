@@ -30,12 +30,8 @@ export class CourseController {
   @HttpCode(200)
   @Post()
   @Auth()
-  @UseInterceptors(FileInterceptor('image'))
-  async create(
-    @Body() dto: CourseDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    return this.courseService.create(dto, image)
+  async create(@Body() dto: CourseDto) {
+    return this.courseService.create(dto)
   }
 
   @UsePipes(new ValidationPipe())
@@ -44,6 +40,18 @@ export class CourseController {
   @Auth()
   async update(@Body() dto: CourseDto, @Param('id') id: string) {
     return this.courseService.update(dto, id)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Patch('update-image/:id')
+  @Auth()
+  @UseInterceptors(FileInterceptor('image'))
+  async updateImage(
+    @Param('id') id: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.courseService.updateImage(id, image)
   }
 
   @HttpCode(200)

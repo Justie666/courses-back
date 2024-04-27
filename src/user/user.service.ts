@@ -13,6 +13,7 @@ export class UserService {
       where: { id: userId },
       include: {
         userFavoriteCourse: true,
+        userPurchasedCourse: true,
       },
     })
 
@@ -37,5 +38,36 @@ export class UserService {
     return this.prisma.user.create({
       data: user,
     })
+  }
+
+  async toggleFavoriteCourse(userId: string, courseId: string) {
+    const existingFavoriteCourse =
+      await this.prisma.userFavoriteCourse.findFirst({
+        where: { courseId: courseId, userId: userId },
+      })
+
+    if (existingFavoriteCourse) {
+      await this.prisma.userFavoriteCourse.delete({
+        where: { id: existingFavoriteCourse.id },
+      })
+      return 'Курс удалён из избранного'
+    }
+
+    await this.prisma.userFavoriteCourse.create({ data: { userId, courseId } })
+    return 'Курс добавлен в избранное'
+  }
+
+  async buyCourse(userId: string, courseId: string) {
+    const existingPurchasedCourse =
+      await this.prisma.userPurchasedCourse.findFirst({
+        where: { courseId: courseId, userId: userId },
+      })
+
+    if (existingPurchasedCourse) {
+      return 'Курс уже куплен'
+    }
+
+    await this.prisma.userPurchasedCourse.create({ data: { userId, courseId } })
+    return 'Курс был куплен'
   }
 }

@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
 import { CourseDto } from './dto/course.dto'
-// import { extname, join } from 'path'
-// import { fileUpload } from 'src/helpers/fileUpload'
+import { extname, join } from 'path'
+import { fileUpload } from 'src/helpers/fileUpload'
 import { getSlug } from 'src/helpers/getSlug'
+import { randomUUID } from 'crypto'
 
 @Injectable()
 export class CourseService {
@@ -31,7 +32,8 @@ export class CourseService {
     })
   }
 
-  async create(dto: Omit<CourseDto, 'id'>, image: Express.Multer.File) {
+  // Добавить default img
+  async create(dto: Omit<CourseDto, 'id'>) {
     const oldCourse = await this.prisma.course.findUnique({
       where: {
         title: dto.title,
@@ -43,22 +45,33 @@ export class CourseService {
 
     const courseSlug = getSlug(dto.title)
 
-    // const pathName = `./uploads/courses`
-    // const fileName = `${courseSlug}${extname(image.originalname)}`
-    // const fullPath = join(pathName, fileName)
-
-    // fileUpload(image, pathName, fileName)
-
     return this.prisma.course.create({
       data: {
         title: dto.title,
         slug: courseSlug,
-        // image: fullPath,
         courseCategory: {
           createMany: { data: dto.categoryIds.map(id => ({ categoryId: id })) },
         },
       },
     })
+  }
+
+  async updateImage(id: string, image: Express.Multer.File) {
+    const pathName = `./uploads/courses`
+    const fileName = `${randomUUID()}${extname(image.originalname)}`
+    const fullPath = join(pathName, fileName)
+
+    fileUpload(image, pathName, fileName)
+    console.log(fullPath)
+
+    await this.prisma.course.update({
+      where: { id },
+      data: {
+        image: fullPath,
+      },
+    })
+
+    return 'Изображение курса было изменено'
   }
 
   async update(dto: Partial<CourseDto>, id: string) {

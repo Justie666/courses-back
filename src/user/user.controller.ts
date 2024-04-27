@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Body, Controller, Get, Post } from '@nestjs/common'
 import { UserService } from './user.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
@@ -11,5 +11,23 @@ export class UserController {
   @Auth()
   async getCurrentUser(@CurrentUser('id') userId: string) {
     return this.userService.getCurrentUser(userId)
+  }
+
+  @Post('/toggle-favorite-course')
+  @Auth()
+  async toggleFavoriteCourse(
+    @CurrentUser('id') userId: string,
+    @Body('courseId') courseId: string,
+  ) {
+    return this.userService.toggleFavoriteCourse(userId, courseId)
+  }
+
+  @Post('/buy-course')
+  @Auth()
+  async buyCourse(
+    @CurrentUser('id') userId: string,
+    @Body('courseId') courseId: string,
+  ) {
+    return this.userService.buyCourse(userId, courseId)
   }
 }

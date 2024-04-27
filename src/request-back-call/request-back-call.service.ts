@@ -9,6 +9,9 @@ export class RequestBackCallService {
   async getAll() {
     return this.prisma.requestBackCall.findMany({
       orderBy: { createdAt: 'asc' },
+      include: {
+        user: true,
+      },
     })
   }
 
