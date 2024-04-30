@@ -7,36 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  email    String @unique
-  name     String
-  password String
-  role     Role   @default(USER)
-
+  id                  String                @id @default(cuid())
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
+  email               String                @unique
+  name                String
+  password            String
+  role                Role                  @default(USER)
   ratingCourse        RatingCourse[]
-  userFavoriteCourse  UserFavoriteCourse[]
-  userPurchasedCourse UserPurchasedCourse[]
   requestBackCall     RequestBackCall[]
+  userFavoriteCourse  UserFavoriteCourse[]
+  userLessonWatched   UserLessonWatched[]
+  userPurchasedCourse UserPurchasedCourse[]
 
   @@map("user")
 }
 
 model Category {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  title String @unique
-
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  title          String           @unique
   courseCategory CourseCategory[]
 
   @@map("category")
@@ -49,28 +41,27 @@ model Course {
 
   title String @unique
   price Int    @default(0)
-  // TODO убрать @default("")
-  slug  String @default("")
   image String @default("")
+  slug  String @unique
 
-  ratingCourse        RatingCourse[]
   courseCategory      CourseCategory[]
+  lessons             Lesson[]
+  ratingCourse        RatingCourse[]
   userFavoriteCourse  UserFavoriteCourse[]
+  userLessonWatched   UserLessonWatched[]
   userPurchasedCourse UserPurchasedCourse[]
 
   @@map("course")
 }
 
 model CourseCategory {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  Category   Category @relation(onDelete: Cascade, onUpdate: Cascade, fields: [categoryId], references: [id])
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
   categoryId String   @map("category_id")
-
-  Course   Course @relation(onDelete: Cascade, onUpdate: Cascade, fields: [courseId], references: [id])
-  courseId String @map("course_id")
+  courseId   String   @map("course_id")
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  Course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@map("course_category")
 }
@@ -79,12 +70,10 @@ model RatingCourse {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id")
-
-  Course   Course? @relation(fields: [courseId], references: [id])
-  courseId String? @map("course_id")
+  userId    String?  @map("user_id")
+  courseId  String?  @map("course_id")
+  Course    Course?  @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
 
   @@map("rating_course")
 }
@@ -93,11 +82,10 @@ model UserFavoriteCourse {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  User     User?   @relation(fields: [userId], references: [id])
-  userId   String? @map("user_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
-  courseId String? @map("course_id")
+  userId    String?  @map("user_id")
+  courseId  String?  @map("course_id")
+  Course    Course?  @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
 
   @@map("user_favorite_course")
 }
@@ -106,32 +94,59 @@ model UserPurchasedCourse {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-
-  User     User?   @relation(fields: [userId], references: [id])
-  userId   String? @map("user_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
-  courseId String? @map("course_id")
+  userId    String?  @map("user_id")
+  courseId  String?  @map("course_id")
+  Course    Course?  @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
 
   @@map("user_purchased_course")
+}
+
+model UserLessonWatched {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    String?  @map("user_id")
+  courseId  String?  @map("course_id")
+  Course    Course?  @relation(fields: [courseId], references: [id])
+  User      User?    @relation(fields: [userId], references: [id])
+
+  @@map("user_lesson_watched")
+}
+
+model RequestBackCall {
+  id        String                @id @default(cuid())
+  createdAt DateTime              @default(now()) @map("created_at")
+  updatedAt DateTime              @updatedAt @map("updated_at")
+  userId    String                @map("user_id")
+  status    StatusRequestBackCall @default(PENDING)
+  comment   String                @default("")
+  phone     String
+  user      User                  @relation(fields: [userId], references: [id])
+
+  @@map("request_back_call")
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  title     String
+  video     String   @default("")
+  courseId  String?  @map("course_id")
+  slug      String
+  Course    Course?  @relation(fields: [courseId], references: [id])
+
+  @@map("lesson")
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 enum StatusRequestBackCall {
   PENDING
   ACCEPT
   REJECT
-}
-
-model RequestBackCall {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  status  StatusRequestBackCall @default(PENDING)
-  comment String                @default("")
-  phone   String
-
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
-
-  @@map("request_back_call")
 }

@@ -5,6 +5,8 @@ import { extname, join } from 'path'
 import { fileUpload } from 'src/helpers/fileUpload'
 import { getSlug } from 'src/helpers/getSlug'
 import { randomUUID } from 'crypto'
+import { Omit } from '@prisma/client/runtime/library'
+import { create } from 'domain'
 
 @Injectable()
 export class CourseService {
@@ -30,6 +32,31 @@ export class CourseService {
         courseCategory: undefined,
       }
     })
+  }
+
+  async getBySlug(slug: string) {
+    const course = await this.prisma.course.findUnique({
+      where: { slug },
+      include: {
+        courseCategory: {
+          include: {
+            Category: true,
+          },
+        },
+        ratingCourse: true,
+        lessons: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+      },
+    })
+
+    return {
+      ...course,
+      categories: course.courseCategory.map(c => c.Category),
+      courseCategory: undefined,
+    }
   }
 
   // Добавить default img

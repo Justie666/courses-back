@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
   UsePipes,
@@ -24,6 +25,11 @@ export class CourseController {
   @Get()
   async getAll() {
     return this.courseService.getAll()
+  }
+
+  @Get('one')
+  async getBySlug(@Query('slug') slug: string) {
+    return this.courseService.getBySlug(slug)
   }
 
   @UsePipes(new ValidationPipe())
