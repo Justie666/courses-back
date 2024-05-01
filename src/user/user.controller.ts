@@ -22,6 +22,15 @@ export class UserController {
     return this.userService.toggleFavoriteCourse(userId, courseId)
   }
 
+  @Post('/toggle-watched-lesson')
+  @Auth()
+  async toggleWatchedLesson(
+    @CurrentUser('id') userId: string,
+    @Body('lessonId') lessonId: string,
+  ) {
+    return this.userService.toggleWatchedLesson(userId, lessonId)
+  }
+
   @Post('/buy-course')
   @Auth()
   async buyCourse(

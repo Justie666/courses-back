@@ -14,6 +14,7 @@ export class UserService {
       include: {
         userFavoriteCourse: true,
         userPurchasedCourse: true,
+        userWatchedLesson: true,
       },
     })
 
@@ -43,7 +44,7 @@ export class UserService {
   async toggleFavoriteCourse(userId: string, courseId: string) {
     const existingFavoriteCourse =
       await this.prisma.userFavoriteCourse.findFirst({
-        where: { courseId: courseId, userId: userId },
+        where: { courseId, userId },
       })
 
     if (existingFavoriteCourse) {
@@ -55,6 +56,38 @@ export class UserService {
 
     await this.prisma.userFavoriteCourse.create({ data: { userId, courseId } })
     return 'Курс добавлен в избранное'
+  }
+
+  async toggleWatchedLesson(userId: string, lessonId: string) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: {
+        Course: true,
+      },
+    })
+
+    const existingWatchedLesson = await this.prisma.userWatchedLesson.findFirst(
+      {
+        where: { lessonId, userId },
+      },
+    )
+
+    if (existingWatchedLesson) {
+      await this.prisma.userWatchedLesson.delete({
+        where: { id: existingWatchedLesson.id },
+      })
+      return {
+        courseSlug: lesson.Course.slug,
+        message: 'Урок отмечен непросмотренным',
+      }
+    }
+
+    await this.prisma.userWatchedLesson.create({ data: { userId, lessonId } })
+
+    return {
+      courseSlug: lesson.Course.slug,
+      message: 'Урок отмечен просмотренным',
+    }
   }
 
   async buyCourse(userId: string, courseId: string) {

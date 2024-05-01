@@ -6,7 +6,6 @@ import { fileUpload } from 'src/helpers/fileUpload'
 import { getSlug } from 'src/helpers/getSlug'
 import { randomUUID } from 'crypto'
 import { Omit } from '@prisma/client/runtime/library'
-import { create } from 'domain'
 
 @Injectable()
 export class CourseService {
