@@ -88,7 +88,6 @@ export class CourseService {
     const fullPath = join(pathName, fileName)
 
     fileUpload(image, pathName, fileName)
-    console.log(fullPath)
 
     await this.prisma.course.update({
       where: { id },

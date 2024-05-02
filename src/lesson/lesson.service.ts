@@ -1,4 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { randomUUID } from 'crypto'
+import { extname, join } from 'path'
+import { fileUpload } from 'src/helpers/fileUpload'
 import { getSlug } from 'src/helpers/getSlug'
 import { PrismaService } from 'src/prisma.service'
 
@@ -72,6 +75,31 @@ export class LessonService {
     })
 
     return { courseSlug: course.slug, message: 'Урок был создан' }
+  }
+
+  async updateVideo(id: string, video: Express.Multer.File) {
+    const lesson = await this.prisma.lesson.findUnique({
+      where: { id },
+      include: {
+        Course: true,
+      },
+    })
+    const courseSlug = lesson.Course.slug
+
+    const pathName = `./uploads/lessons`
+    const fileName = `${randomUUID()}${extname(video.originalname)}`
+    const fullPath = join(pathName, fileName)
+
+    fileUpload(video, pathName, fileName)
+
+    await this.prisma.lesson.update({
+      where: { id },
+      data: {
+        video: fullPath,
+      },
+    })
+
+    return { courseSlug: courseSlug, message: 'Видео у урока было изменено' }
   }
 
   async delete(id: string) {

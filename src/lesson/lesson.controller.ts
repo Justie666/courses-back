@@ -6,11 +6,14 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
 import { LessonService } from './lesson.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
+import { FileInterceptor } from '@nestjs/platform-express'
 
 @Controller('lesson')
 export class LessonController {
@@ -33,6 +36,18 @@ export class LessonController {
     @Param('id') id: string,
   ) {
     return this.lessonService.update(id, dto)
+  }
+
+  @UsePipes(new ValidationPipe())
+  @HttpCode(200)
+  @Patch('update-video/:id')
+  @Auth()
+  @UseInterceptors(FileInterceptor('video'))
+  async updateVideo(
+    @Param('id') id: string,
+    @UploadedFile() video: Express.Multer.File,
+  ) {
+    return this.lessonService.updateVideo(id, video)
   }
 
   @UsePipes(new ValidationPipe())
