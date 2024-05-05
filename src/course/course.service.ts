@@ -21,6 +21,7 @@ export class CourseService {
           },
         },
         ratingCourse: true,
+        lessons: true,
       },
     })
 

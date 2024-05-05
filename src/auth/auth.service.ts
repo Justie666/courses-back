@@ -13,7 +13,7 @@ import { userWithoutPassword } from 'src/helpers'
 
 @Injectable()
 export class AuthService {
-  EXPIRE_DAY_REFRESH_TOKEN = 1
+  EXPIRE_DAY_REFRESH_TOKEN = 40
   REFRESH_TOKEN_NAME = 'refreshToken'
 
   constructor(private jwt: JwtService, private userService: UserService) {}

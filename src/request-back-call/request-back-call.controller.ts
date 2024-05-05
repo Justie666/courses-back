@@ -6,6 +6,8 @@ import {
   Param,
   Patch,
   Post,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common'
 import { RequestBackCallService } from './request-back-call.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
@@ -23,18 +25,18 @@ export class RequestBackCallController {
     return this.requestBackCallService.getAll()
   }
 
-  // @UsePipes(new ValidationPipe())
+  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post()
   @Auth()
   async create(
-    @Body() dto: { phone: string },
+    @Body() dto: { phone: string; problem: string },
     @CurrentUser('id') userId: string,
   ) {
     return this.requestBackCallService.create(dto, userId)
   }
 
-  // @UsePipes(new ValidationPipe())
+  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Patch(':id')
   @Auth()

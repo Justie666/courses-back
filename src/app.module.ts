@@ -7,7 +7,8 @@ import { UserModule } from './user/user.module'
 import { CategoryModule } from './category/category.module'
 import { CourseModule } from './course/course.module'
 import { RequestBackCallModule } from './request-back-call/request-back-call.module'
-import { LessonModule } from './lesson/lesson.module';
+import { LessonModule } from './lesson/lesson.module'
+import { ProjectModule } from './project/project.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LessonModule } from './lesson/lesson.module';
     CourseModule,
     RequestBackCallModule,
     LessonModule,
+    ProjectModule,
   ],
   controllers: [AppController],
   providers: [AppService],

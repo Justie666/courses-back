@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { StatusRequestBackCall } from '@prisma/client'
 import { PrismaService } from 'src/prisma.service'
 
@@ -15,23 +15,23 @@ export class RequestBackCallService {
     })
   }
 
-  async create(dto: { phone: string }, userId: string) {
-    const oldRequest = await this.prisma.requestBackCall.findFirst({
-      where: {
-        phone: dto.phone,
-        userId,
-        status: 'PENDING',
-      },
-    })
+  async create(dto: { phone: string; problem: string }, userId: string) {
+    // const oldRequest = await this.prisma.requestBackCall.findFirst({
+    //   where: {
+    //     phone: dto.phone,
+    //     userId,
+    //     status: 'PENDING',
+    //   },
+    // })
 
-    if (oldRequest)
-      throw new BadRequestException(
-        'Вы уже отправили запрос на обратный звонок',
-      )
+    // if (oldRequest)
+    //   throw new BadRequestException(
+    //     'Вы уже отправили запрос на обратный звонок',
+    //   )
 
     return this.prisma.requestBackCall.create({
       data: {
-        phone: dto.phone,
+        ...dto,
         userId,
       },
     })

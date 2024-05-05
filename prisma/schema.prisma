@@ -27,9 +27,10 @@ model User {
 }
 
 model Category {
-  id             String           @id @default(cuid())
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
   title          String           @unique
   courseCategory CourseCategory[]
 
@@ -62,8 +63,8 @@ model CourseCategory {
 
   categoryId String   @map("category_id")
   courseId   String   @map("course_id")
-  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  Course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("course_category")
 }
@@ -75,8 +76,8 @@ model RatingCourse {
 
   userId   String? @map("user_id")
   courseId String? @map("course_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
-  User     User?   @relation(fields: [userId], references: [id])
+  Course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  User     User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("rating_course")
 }
@@ -88,8 +89,8 @@ model UserFavoriteCourse {
 
   userId   String? @map("user_id")
   courseId String? @map("course_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
-  User     User?   @relation(fields: [userId], references: [id])
+  Course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  User     User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("user_favorite_course")
 }
@@ -101,8 +102,8 @@ model UserPurchasedCourse {
 
   userId   String? @map("user_id")
   courseId String? @map("course_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
-  User     User?   @relation(fields: [userId], references: [id])
+  Course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  User     User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("user_purchased_course")
 }
@@ -112,9 +113,9 @@ model UserWatchedLesson {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  User     User?   @relation(fields: [userId], references: [id])
+  User     User?   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String? @map("user_id")
-  Lesson   Lesson? @relation(fields: [lessonId], references: [id])
+  Lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   lessonId String? @map("lesson_id")
 
   @@map("user_watched_lesson")
@@ -125,11 +126,13 @@ model RequestBackCall {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  userId  String                @map("user_id")
   status  StatusRequestBackCall @default(PENDING)
+  problem String
   comment String                @default("")
   phone   String
-  user    User                  @relation(fields: [userId], references: [id])
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @map("user_id")
 
   @@map("request_back_call")
 }
@@ -146,9 +149,26 @@ model Lesson {
   userWatchedLesson UserWatchedLesson[]
 
   courseId String? @map("course_id")
-  Course   Course? @relation(fields: [courseId], references: [id])
+  Course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("lesson")
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title  String        @unique
+  status StatusProject @default(IN_PROGRESS)
+
+  @@map("project")
+}
+
+enum StatusProject {
+  IN_PROGRESS
+  CANCELLED
+  READY
 }
 
 enum Role {
