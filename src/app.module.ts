@@ -9,6 +9,7 @@ import { CourseModule } from './course/course.module'
 import { RequestBackCallModule } from './request-back-call/request-back-call.module'
 import { LessonModule } from './lesson/lesson.module'
 import { ProjectModule } from './project/project.module'
+import { DirectionModule } from './direction/direction.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProjectModule } from './project/project.module'
     RequestBackCallModule,
     LessonModule,
     ProjectModule,
+    DirectionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

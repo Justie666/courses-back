@@ -25,7 +25,7 @@ export class ProjectService {
       },
     })
 
-    return 'Проект был создан'
+    return 'Проект был добавлен'
   }
 
   async update(dto: { title: string; status: StatusProject }, id: string) {
