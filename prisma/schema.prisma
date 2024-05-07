@@ -21,6 +21,8 @@ model User {
   userFavoriteCourse  UserFavoriteCourse[]
   userWatchedLesson   UserWatchedLesson[]
   userPurchasedCourse UserPurchasedCourse[]
+  requestInternship   RequestInternship[]
+  userProject         UserProject[]
 
   @@map("user")
 }
@@ -159,6 +161,8 @@ model Project {
   title  String        @unique
   status StatusProject @default(IN_PROGRESS)
 
+  userProject UserProject[]
+
   @@map("project")
 }
 
@@ -187,4 +191,46 @@ enum StatusRequestBackCall {
   PENDING
   ACCEPT
   REJECT
+}
+
+enum StatusRequestInternship {
+  PENDING
+  ACCEPT
+  REJECT
+}
+
+model RequestInternship {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  status StatusRequestInternship @default(PENDING)
+
+  phone     String
+  skills    String
+  aboutMe   String
+  projects  String
+  direction String
+
+  userProject UserProject[]
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id")
+
+  @@map("request_internship")
+}
+
+model UserProject {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  User                User?              @relation(fields: [userId], references: [id])
+  userId              String?            @map("user_id")
+  Project             Project?           @relation(fields: [projectId], references: [id])
+  projectId           String?            @map("project_id")
+  RequestInternship   RequestInternship? @relation(fields: [requestInternshipId], references: [id])
+  requestInternshipId String?            @map("request_internship_id")
+
+  @@map("user_project")
 }

@@ -10,6 +10,7 @@ import { RequestBackCallModule } from './request-back-call/request-back-call.mod
 import { LessonModule } from './lesson/lesson.module'
 import { ProjectModule } from './project/project.module'
 import { DirectionModule } from './direction/direction.module';
+import { RequestInternshipModule } from './request-internship/request-internship.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { DirectionModule } from './direction/direction.module';
     LessonModule,
     ProjectModule,
     DirectionModule,
+    RequestInternshipModule,
   ],
   controllers: [AppController],
   providers: [AppService],
