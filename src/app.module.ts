@@ -11,6 +11,7 @@ import { LessonModule } from './lesson/lesson.module'
 import { ProjectModule } from './project/project.module'
 import { DirectionModule } from './direction/direction.module';
 import { RequestInternshipModule } from './request-internship/request-internship.module';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RequestInternshipModule } from './request-internship/request-internship
     ProjectModule,
     DirectionModule,
     RequestInternshipModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

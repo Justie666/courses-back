@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common'
@@ -21,6 +22,11 @@ export class ProjectController {
   @Get()
   async getAll() {
     return this.projectService.getAll()
+  }
+
+  @Get('one')
+  async getById(@Query('id') id: string) {
+    return this.projectService.getById(id)
   }
 
   @UsePipes(new ValidationPipe())

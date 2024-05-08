@@ -7,7 +7,37 @@ export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
   async getAll() {
-    return this.prisma.project.findMany({ orderBy: { createdAt: 'asc' } })
+    return this.prisma.project.findMany({
+      orderBy: { createdAt: 'asc' },
+      include: {
+        userProject: {
+          include: {
+            User: true,
+            Direction: true,
+          },
+        },
+      },
+    })
+  }
+
+  async getById(id: string) {
+    return this.prisma.project.findUnique({
+      where: { id },
+      include: {
+        Task: {
+          include: {
+            Direction: true,
+            User: true,
+          },
+        },
+        userProject: {
+          include: {
+            User: true,
+            Direction: true,
+          },
+        },
+      },
+    })
   }
 
   async create(dto: { title: string }) {

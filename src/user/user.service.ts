@@ -15,6 +15,12 @@ export class UserService {
         userFavoriteCourse: true,
         userPurchasedCourse: true,
         userWatchedLesson: true,
+        userProject: {
+          include: {
+            Project: true,
+            Direction: true,
+          },
+        },
       },
     })
 

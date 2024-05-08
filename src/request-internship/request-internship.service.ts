@@ -14,6 +14,16 @@ export class RequestInternshipService {
       orderBy: { createdAt: 'asc' },
       include: {
         User: true,
+        Direction: true,
+        userProject: {
+          select: {
+            Project: {
+              select: {
+                title: true,
+              },
+            },
+          },
+        },
       },
     })
   }
@@ -22,7 +32,7 @@ export class RequestInternshipService {
     const oldRequest = await this.prisma.requestInternship.findFirst({
       where: {
         userId: userId,
-        direction: dto.direction,
+        directionId: dto.directionId,
       },
     })
 
@@ -33,8 +43,12 @@ export class RequestInternshipService {
 
     await this.prisma.requestInternship.create({
       data: {
-        userId,
-        ...dto,
+        userId: userId,
+        aboutMe: dto.aboutMe,
+        phone: dto.phone,
+        projects: dto.projects,
+        skills: dto.skills,
+        directionId: dto.directionId,
       },
     })
 
@@ -51,11 +65,21 @@ export class RequestInternshipService {
 
       await this.prisma.userProject.create({
         data: {
+          directionId: request.directionId,
           userId: request.userId,
           projectId: dto.projectId,
           requestInternshipId: request.id,
         },
       })
+
+      await this.prisma.requestInternship.update({
+        where: { id },
+        data: {
+          status: dto.status,
+        },
+      })
+
+      return 'Заявка была принята'
     }
 
     await this.prisma.requestInternship.update({
@@ -64,6 +88,6 @@ export class RequestInternshipService {
         status: dto.status,
       },
     })
-    return 'Заявка была изменена'
+    return 'Заявка была отклонена'
   }
 }

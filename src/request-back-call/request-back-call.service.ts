@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { StatusRequestBackCall } from '@prisma/client'
+import { StatusRequest } from '@prisma/client'
 import { PrismaService } from 'src/prisma.service'
 
 @Injectable()
@@ -25,7 +25,7 @@ export class RequestBackCallService {
   async update(
     dto: {
       comment: string
-      status: StatusRequestBackCall
+      status: StatusRequest
     },
     id: string,
   ) {

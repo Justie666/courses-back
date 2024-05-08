@@ -1,4 +1,4 @@
-import { StatusRequestInternship } from '@prisma/client'
+import { StatusRequest } from '@prisma/client'
 import { IsEnum, IsOptional, IsString } from 'class-validator'
 
 export class RequestInternshipCreateDto {
@@ -15,12 +15,12 @@ export class RequestInternshipCreateDto {
   projects: string
 
   @IsString()
-  direction: string
+  directionId: string
 }
 
 export class RequestInternshipUpdateDto {
-  @IsEnum(StatusRequestInternship)
-  status: StatusRequestInternship
+  @IsEnum(StatusRequest)
+  status: StatusRequest
 
   @IsOptional()
   @IsString()

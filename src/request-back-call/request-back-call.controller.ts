@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common'
 import { RequestBackCallService } from './request-back-call.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
-import { StatusRequestBackCall } from '@prisma/client'
+import { StatusRequest } from '@prisma/client'
 
 @Controller('request-back-call')
 export class RequestBackCallController {
@@ -36,7 +36,7 @@ export class RequestBackCallController {
   @Patch(':id')
   @Auth()
   async update(
-    @Body() dto: { comment: string; status: StatusRequestBackCall },
+    @Body() dto: { comment: string; status: StatusRequest },
     @Param('id') id: string,
   ) {
     return this.requestBackCallService.update(dto, id)
