@@ -1,24 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from 'src/prisma.service'
-import { TaskCreateDto } from './dto/task.dto'
+import { TaskCreateDto, TaskUpdateDto } from './dto/task.dto'
 
 @Injectable()
 export class TaskService {
   constructor(private prisma: PrismaService) {}
-
-  // async getAll() {
-  //   return this.prisma.project.findMany({
-  //     orderBy: { createdAt: 'asc' },
-  //     include: {
-  //       userProject: {
-  //         include: {
-  //           User: true,
-  //           Direction: true,
-  //         },
-  //       },
-  //     },
-  //   })
-  // }
 
   async create(dto: TaskCreateDto) {
     await this.prisma.task.create({
@@ -30,33 +16,22 @@ export class TaskService {
     return 'Задача добавлена'
   }
 
-  // async update(dto: { title: string; status: StatusProject }, id: string) {
-  //   const existingProject = await this.prisma.project.findUnique({
-  //     where: {
-  //       title: dto.title,
-  //       NOT: { id },
-  //     },
-  //   })
+  async update(dto: TaskUpdateDto, id: string) {
+    await this.prisma.task.update({
+      where: { id },
+      data: dto,
+    })
 
-  //   if (existingProject) {
-  //     throw new BadRequestException('Проект с таким названием уже существует')
-  //   }
+    return 'Задача была изменёна'
+  }
 
-  //   await this.prisma.project.update({
-  //     where: { id },
-  //     data: dto,
-  //   })
+  async delete(id: string) {
+    await this.prisma.task.delete({
+      where: {
+        id,
+      },
+    })
 
-  //   return 'Проект был изменён'
-  // }
-
-  // async delete(id: string) {
-  //   await this.prisma.project.delete({
-  //     where: {
-  //       id,
-  //     },
-  //   })
-
-  //   return 'Проект был удалён'
-  // }
+    return 'Задача была удалена'
+  }
 }

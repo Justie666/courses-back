@@ -1,5 +1,5 @@
-import { Priority, StatusRequest, StatusTask } from '@prisma/client'
-import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator'
+import { Priority, StatusTask } from '@prisma/client'
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator'
 
 export class TaskCreateDto {
   @IsString()
@@ -12,7 +12,7 @@ export class TaskCreateDto {
   @IsOptional()
   content: string
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   deadline?: Date
 
@@ -31,11 +31,26 @@ export class TaskCreateDto {
   userId?: string
 }
 
-export class RequestInternshipUpdateDto {
-  @IsEnum(StatusRequest)
-  status: StatusRequest
-
-  @IsOptional()
+export class TaskUpdateDto {
   @IsString()
-  projectId: string
+  title: string
+
+  @IsEnum(StatusTask)
+  status: StatusTask
+
+  @IsString()
+  @IsOptional()
+  content: string
+
+  @IsDateString()
+  @IsOptional()
+  deadline?: Date
+
+  @IsEnum(Priority)
+  @IsOptional()
+  priority?: Priority
+
+  @IsString()
+  @IsOptional()
+  userId?: string
 }
