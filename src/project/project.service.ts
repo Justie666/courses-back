@@ -25,6 +25,9 @@ export class ProjectService {
       where: { id },
       include: {
         Task: {
+          orderBy: {
+            createdAt: 'asc',
+          },
           include: {
             Direction: true,
             User: true,
